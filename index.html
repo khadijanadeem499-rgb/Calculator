@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Advanced Calculator Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-tertiary: #64748b;
+            --border: #e2e8f0;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --accent-dark: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --button-bg: #ffffff;
+            --button-hover: #f8fafc;
+            --operator-bg: #dbeafe;
+            --function-bg: #f1f5f9;
+            --equals-bg: #3b82f6;
+            --equals-color: #ffffff;
+            --display-bg: #ffffff;
+            --memory-bg: #d1fae5;
+            --scientific-bg: #eff6ff;
+            --gradient-start: #3b82f6;
+            --gradient-end: #8b5cf6;
+            --overlay-bg: rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --border: #475569;
+            --accent: #60a5fa;
+            --accent-light: #93c5fd;
+            --accent-dark: #3b82f6;
+            --success: #34d399;
+            --danger: #f87171;
+            --warning: #fbbf24;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5);
+            --button-bg: #334155;
+            --button-hover: #475569;
+            --operator-bg: #1e3a8a;
+            --function-bg: #334155;
+            --equals-bg: #3b82f6;
+            --equals-color: #ffffff;
+            --display-bg: #1e293b;
+            --memory-bg: #065f46;
+            --scientific-bg: #1e3a8a;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            transition: background 0.5s ease;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--bg-secondary);
+            border-radius: 32px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.2rem;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        .memory-indicator {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+        }
+
+        .mode-btn {
+            padding: 10px 5px;
+            border: none;
+            background: var(--button-bg);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .mode-btn.active {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .mode-btn:hover {
+            background: var(--accent-light);
+            color: white;
+        }
+
+        .memory-bar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            padding: 8px;
+            background: var(--bg-tertiary);
+        }
+
+        .memory-btn {
+            padding: 6px 2px;
+            border: none;
+            background: var(--memory-bg);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .memory-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .display {
+            background: var(--display-bg);
+            padding: 20px;
+            text-align: right;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .expression {
+            color: var(--text-tertiary);
+            font-size: 14px;
+            min-height: 20px;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .current {
+            font-size: 42px;
+            font-weight: 300;
+            color: var(--text-primary);
+            word-wrap: break-word;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.2;
+        }
+
+        .scientific-panel {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2px;
+            padding: 6px;
+            background: var(--bg-tertiary);
+            max-height: 160px;
+            overflow-y: auto;
+        }
+
+        .sci-btn {
+            border: none;
+            padding: 12px 2px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            background: var(--scientific-bg);
+            color: var(--text-primary);
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .sci-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(0.98);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            padding: 6px;
+            background: var(--bg-tertiary);
+        }
+
+        .keypad button {
+            border: none;
+            padding: 18px 8px;
+            font-size: 20px;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            background: var(--button-bg);
+            color: var(--text-primary);
+            transition: all 0.15s;
+            box-shadow: var(--shadow);
+        }
+
+        .keypad button:active {
+            transform: scale(0.95);
+            background: var(--accent-light);
+            color: white;
+        }
+
+        .keypad button.operator {
+            background: var(--operator-bg);
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .keypad button.function {
+            background: var(--function-bg);
+            color: var(--text-primary);
+        }
+
+        .keypad button.equals {
+            background: var(--equals-bg);
+            color: var(--equals-color);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .converter-panel {
+            padding: 15px;
+            background: var(--bg-secondary);
+            display: none;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .category-btn {
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .category-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .converter-row {
+            margin-bottom: 12px;
+        }
+
+        .converter-input, .converter-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--display-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .converter-result {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--accent);
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .history-panel {
+            padding: 15px;
+            background: var(--bg-secondary);
+            max-height: 350px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .history-search {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: var(--display-bg);
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+        }
+
+        .history-item:hover {
+            background: var(--bg-tertiary);
+            transform: translateX(3px);
+        }
+
+        .history-expr {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .history-result {
+            font-size: 18px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Floating Trig Table Modal - This is the key improvement */
+        .trig-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay-bg);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .trig-modal {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+            border: 2px solid var(--accent);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .trig-modal-header {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .trig-modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-trig-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-trig-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .trig-modal-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
+
+        .trig-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: center;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .trig-table th {
+            background: var(--accent);
+            color: white;
+            padding: 10px 3px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .trig-table td {
+            padding: 10px 3px;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .trig-table .func-name {
+            background: var(--accent-light);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 8px;
+            font-size: 12px;
+        }
+
+        .trig-table td:not(.func-name) {
+            cursor: pointer;
+        }
+
+        .trig-table td:not(.func-name):hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(0.95);
+            border-radius: 4px;
+        }
+
+        .trig-footer {
+            margin-top: 15px;
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .btn-pressed {
+            transform: scale(0.95) !important;
+            background: var(--accent) !important;
+            color: white !important;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 400px) {
+            .scientific-panel {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .current {
+                font-size: 32px;
+            }
+            
+            .memory-bar {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .keypad button {
+                padding: 15px 5px;
+                font-size: 18px;
+            }
+            
+            .trig-table {
+                font-size: 11px;
+            }
+            
+            .trig-table th,
+            .trig-table td {
+                padding: 8px 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-calculator"></i>
+                Advanced Calculator Pro
+                <span class="memory-indicator" id="memoryIndicator" style="display: none;">M</span>
+            </h1>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="modeBasic">Basic</button>
+            <button class="mode-btn" id="modeScientific">Scientific</button>
+            <button class="mode-btn" id="modeConverter">Converter</button>
+            <button class="mode-btn" id="modeHistory">History</button>
+        </div>
+
+        <div class="memory-bar">
+            <button class="memory-btn" id="memoryMC">MC</button>
+            <button class="memory-btn" id="memoryMR">MR</button>
+            <button class="memory-btn" id="memoryMPlus">M+</button>
+            <button class="memory-btn" id="memoryMMinus">M-</button>
+            <button class="memory-btn" id="memoryMS">MS</button>
+            <button class="memory-btn" id="memoryMMultiply">M*</button>
+            <button class="memory-btn" id="memoryMDivide">M/</button>
+        </div>
+
+        <div class="display">
+            <div class="expression" id="expression"></div>
+            <div class="current" id="display">0</div>
+        </div>
+
+        <div class="scientific-panel" id="scientificPanel" style="display: none;">
+            <button class="sci-btn" id="sciSin">sin</button>
+            <button class="sci-btn" id="sciCos">cos</button>
+            <button class="sci-btn" id="sciTan">tan</button>
+            <button class="sci-btn" id="sciAsin">asin</button>
+            <button class="sci-btn" id="sciAcos">acos</button>
+            <button class="sci-btn" id="sciAtan">atan</button>
+            <button class="sci-btn" id="sciLog">log</button>
+            <button class="sci-btn" id="sciLn">ln</button>
+            <button class="sci-btn" id="sciSqrt">√</button>
+            <button class="sci-btn" id="sciSquare">x²</button>
+            <button class="sci-btn" id="sciCube">x³</button>
+            <button class="sci-btn" id="sciPower">xʸ</button>
+            <button class="sci-btn" id="sciTenPower">10ˣ</button>
+            <button class="sci-btn" id="sciEPower">eˣ</button>
+            <button class="sci-btn" id="sciPi">π</button>
+            <button class="sci-btn" id="sciE">e</button>
+            <button class="sci-btn" id="sciFactorial">n!</button>
+            <button class="sci-btn" id="sciPercent">%</button>
+            <button class="sci-btn" id="sciLeftParen">(</button>
+            <button class="sci-btn" id="sciRightParen">)</button>
+            <button class="sci-btn" id="sciAbs">|x|</button>
+            <button class="sci-btn" id="sciInverse">1/x</button>
+            <button class="sci-btn" id="sciEE">EE</button>
+            <button class="sci-btn" id="showTrigTable">📊 Trig</button>
+        </div>
+
+        <div class="converter-panel" id="converterPanel">
+            <div class="category-grid" id="categoryGrid"></div>
+            <div class="converter-row">
+                <input type="number" class="converter-input" id="converterFrom" value="1" step="any">
+                <select class="converter-select" id="converterFromUnit"></select>
+            </div>
+            <div class="converter-row">
+                <div class="converter-result" id="converterResult">0</div>
+                <select class="converter-select" id="converterToUnit"></select>
+            </div>
+        </div>
+
+        <div class="history-panel" id="historyPanel">
+            <div class="history-header">
+                <span class="history-title">History</span>
+                <button class="history-btn" id="clearHistoryBtn">Clear</button>
+            </div>
+            <input type="text" class="history-search" id="historySearch" placeholder="Search history...">
+            <div id="historyList"></div>
+        </div>
+
+        <div class="keypad">
+            <button class="function" id="btnClear">C</button>
+            <button class="function" id="btnClearEntry">CE</button>
+            <button class="function" id="btnBackspace">⌫</button>
+            <button class="operator" id="btnDivide">÷</button>
+            
+            <button id="btn7">7</button>
+            <button id="btn8">8</button>
+            <button id="btn9">9</button>
+            <button class="operator" id="btnMultiply">×</button>
+            
+            <button id="btn4">4</button>
+            <button id="btn5">5</button>
+            <button id="btn6">6</button>
+            <button class="operator" id="btnSubtract">−</button>
+            
+            <button id="btn1">1</button>
+            <button id="btn2">2</button>
+            <button id="btn3">3</button>
+            <button class="operator" id="btnAdd">+</button>
+            
+            <button class="function" id="btnToggleSign">±</button>
+            <button id="btn0">0</button>
+            <button id="btnDecimal">.</button>
+            <button class="equals" id="btnEquals">=</button>
+        </div>
+    </div>
+
+    <!-- Floating Trig Table Modal - Separate from main container -->
+    <div class="trig-modal-overlay" id="trigModalOverlay">
+        <div class="trig-modal">
+            <div class="trig-modal-header">
+                <h3>
+                    <i class="fas fa-table"></i>
+                    Trigonometric Values Table
+                </h3>
+                <button class="close-trig-modal" id="closeTrigModal">×</button>
+            </div>
+            <div class="trig-modal-content">
+                <table class="trig-table">
+                    <thead>
+                        <tr>
+                            <th>Angle</th>
+                            <th>0°</th>
+                            <th>30°</th>
+                            <th>45°</th>
+                            <th>60°</th>
+                            <th>90°</th>
+                            <th>180°</th>
+                            <th>270°</th>
+                            <th>360°</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="func-name">sin</td>
+                            <td>0</td>
+                            <td>1/2</td>
+                            <td>√2/2</td>
+                            <td>√3/2</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>-1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="func-name">cos</td>
+                            <td>1</td>
+                            <td>√3/2</td>
+                            <td>√2/2</td>
+                            <td>1/2</td>
+                            <td>0</td>
+                            <td>-1</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td class="func-name">tan</td>
+                            <td>0</td>
+                            <td>1/√3</td>
+                            <td>1</td>
+                            <td>√3</td>
+                            <td>—</td>
+                            <td>0</td>
+                            <td>—</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="func-name">cot</td>
+                            <td>—</td>
+                            <td>√3</td>
+                            <td>1</td>
+                            <td>1/√3</td>
+                            <td>0</td>
+                            <td>—</td>
+                            <td>0</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="trig-footer">
+                    Click any value to insert it into your calculation
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Enhanced Calculator State
+        const state = {
+            currentInput: '0',
+            previousInput: '',
+            operator: '',
+            expression: '',
+            shouldReset: false,
+            memory: 0,
+            history: JSON.parse(localStorage.getItem('calcHistory') || '[]'),
+            currentMode: localStorage.getItem('defaultMode') || 'basic',
+            isDark: localStorage.getItem('theme') === 'dark',
+            lastCalculation: null,
+            isScientificNotation: false
+        };
+
+        // Enhanced Unit Data
+        const units = {
+            'Length': {
+                'm': 1, 'km': 1000, 'cm': 0.01, 'mm': 0.001,
+                'mi': 1609.34, 'ft': 0.3048, 'in': 0.0254, 'yd': 0.9144
+            },
+            'Weight': {
+                'kg': 1, 'g': 0.001, 'mg': 0.000001, 'lb': 0.453592,
+                'oz': 0.0283495, 't': 1000
+            },
+            'Temperature': {
+                'C': 1, 'F': 1, 'K': 1
+            },
+            'Area': {
+                'm²': 1, 'km²': 1e6, 'cm²': 1e-4, 'ha': 10000,
+                'ac': 4046.86, 'ft²': 0.092903
+            },
+            'Volume': {
+                'L': 1, 'mL': 0.001, 'm³': 1000, 'gal': 3.78541,
+                'qt': 0.946353, 'pt': 0.473176
+            }
+        };
+
+        // DOM Elements
+        const elements = {
+            display: document.getElementById('display'),
+            expression: document.getElementById('expression'),
+            memoryIndicator: document.getElementById('memoryIndicator'),
+            toast: document.getElementById('toast'),
+            scientificPanel: document.getElementById('scientificPanel'),
+            converterPanel: document.getElementById('converterPanel'),
+            historyPanel: document.getElementById('historyPanel'),
+            trigModalOverlay: document.getElementById('trigModalOverlay'),
+            closeTrigModal: document.getElementById('closeTrigModal'),
+            showTrigTable: document.getElementById('showTrigTable')
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            initConverter();
+            displayHistory();
+            attachEventListeners();
+            updateDisplay();
+            initTrigTable();
+        });
+
+        function attachEventListeners() {
+            // Numbers
+            for (let i = 0; i <= 9; i++) {
+                const btn = document.getElementById(`btn${i}`);
+                if (btn) btn.addEventListener('click', () => appendNumber(i.toString()));
+            }
+
+            // Basic Operators
+            document.getElementById('btnAdd')?.addEventListener('click', () => appendOperator('+'));
+            document.getElementById('btnSubtract')?.addEventListener('click', () => appendOperator('-'));
+            document.getElementById('btnMultiply')?.addEventListener('click', () => appendOperator('*'));
+            document.getElementById('btnDivide')?.addEventListener('click', () => appendOperator('/'));
+
+            // Functions
+            document.getElementById('btnClear')?.addEventListener('click', clearAll);
+            document.getElementById('btnClearEntry')?.addEventListener('click', clearEntry);
+            document.getElementById('btnBackspace')?.addEventListener('click', backspace);
+            document.getElementById('btnToggleSign')?.addEventListener('click', toggleSign);
+            document.getElementById('btnDecimal')?.addEventListener('click', appendDecimal);
+            document.getElementById('btnEquals')?.addEventListener('click', calculate);
+
+            // Memory
+            ['MC', 'MR', 'MPlus', 'MMinus', 'MS', 'MMultiply', 'MDivide'].forEach(op => {
+                document.getElementById(`memory${op}`)?.addEventListener('click', () => handleMemory(op));
+            });
+
+            // Scientific
+            const sciFunctions = {
+                'sciSin': 'sin', 'sciCos': 'cos', 'sciTan': 'tan',
+                'sciAsin': 'asin', 'sciAcos': 'acos', 'sciAtan': 'atan',
+                'sciLog': 'log', 'sciLn': 'ln', 'sciSqrt': 'sqrt',
+                'sciSquare': 'square', 'sciCube': 'cube', 'sciPower': 'power',
+                'sciTenPower': 'tenPower', 'sciEPower': 'ePower',
+                'sciPi': 'pi', 'sciE': 'e', 'sciFactorial': 'factorial',
+                'sciPercent': 'percent', 'sciLeftParen': 'leftParen',
+                'sciRightParen': 'rightParen', 'sciAbs': 'abs',
+                'sciInverse': 'inverse', 'sciEE': 'ee'
+            };
+
+            Object.entries(sciFunctions).forEach(([id, func]) => {
+                document.getElementById(id)?.addEventListener('click', () => addScientific(func));
+            });
+
+            // Mode
+            ['basic', 'scientific', 'converter', 'history'].forEach(mode => {
+                const btn = document.getElementById(`mode${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+                if (btn) btn.addEventListener('click', () => setMode(mode));
+            });
+
+            // Theme
+            document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+
+            // History
+            document.getElementById('clearHistoryBtn')?.addEventListener('click', clearHistory);
+            document.getElementById('historySearch')?.addEventListener('input', displayHistory);
+
+            // Converter
+            document.getElementById('converterFrom')?.addEventListener('input', convert);
+            document.getElementById('converterFromUnit')?.addEventListener('change', convert);
+            document.getElementById('converterToUnit')?.addEventListener('change', convert);
+
+            // Trig Modal
+            elements.showTrigTable?.addEventListener('click', showTrigModal);
+            elements.closeTrigModal?.addEventListener('click', hideTrigModal);
+            elements.trigModalOverlay?.addEventListener('click', (e) => {
+                if (e.target === elements.trigModalOverlay) {
+                    hideTrigModal();
+                }
+            });
+
+            // Keyboard
+            document.addEventListener('keydown', handleKeyboard);
+
+            // Button press animation
+            document.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('mousedown', () => btn.classList.add('btn-pressed'));
+                btn.addEventListener('mouseup', () => btn.classList.remove('btn-pressed'));
+                btn.addEventListener('mouseleave', () => btn.classList.remove('btn-pressed'));
+            });
+        }
+
+        // Core Calculator Functions
+        function appendNumber(num) {
+            if (state.shouldReset) {
+                state.currentInput = '';
+                state.shouldReset = false;
+            }
+            if (state.currentInput === '0' && num !== '.') {
+                state.currentInput = num;
+            } else {
+                state.currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        function appendDecimal() {
+            if (state.shouldReset) {
+                state.currentInput = '0';
+                state.shouldReset = false;
+            }
+            if (!state.currentInput.includes('.')) {
+                state.currentInput += '.';
+                updateDisplay();
+            }
+        }
+
+        function appendOperator(op) {
+            if (state.operator && !state.shouldReset) {
+                calculate();
+            }
+            state.previousInput = state.currentInput;
+            state.operator = op;
+            state.expression = `${state.currentInput} ${getSymbol(op)} `;
+            state.currentInput = '0';
+            state.shouldReset = false;
+            updateDisplay();
+        }
+
+        function getSymbol(op) {
+            const symbols = { '+': '+', '-': '−', '*': '×', '/': '÷', '^': '^' };
+            return symbols[op] || op;
+        }
+
+        function calculate() {
+            try {
+                let result;
+                const prev = parseFloat(state.previousInput || state.currentInput);
+                const curr = parseFloat(state.currentInput);
+
+                if (isNaN(prev) || isNaN(curr)) {
+                    showToast('Invalid input');
+                    return;
+                }
+
+                switch(state.operator) {
+                    case '+': result = prev + curr; break;
+                    case '-': result = prev - curr; break;
+                    case '*': result = prev * curr; break;
+                    case '/': 
+                        if (curr === 0) {
+                            showToast('Cannot divide by zero');
+                            return;
+                        }
+                        result = prev / curr;
+                        break;
+                    case '^': result = Math.pow(prev, curr); break;
+                    default: return;
+                }
+
+                result = parseFloat(result.toFixed(12));
+                
+                const historyEntry = `${state.expression || prev} ${curr} = ${result}`;
+                addToHistory(historyEntry, result);
+                
+                state.expression = historyEntry;
+                state.currentInput = result.toString();
+                state.previousInput = '';
+                state.operator = '';
+                state.shouldReset = true;
+                state.lastCalculation = result;
+                
+                updateDisplay();
+            } catch (e) {
+                showToast('Calculation error');
+            }
+        }
+
+        function clearAll() {
+            state.currentInput = '0';
+            state.previousInput = '';
+            state.operator = '';
+            state.expression = '';
+            state.shouldReset = false;
+            updateDisplay();
+        }
+
+        function clearEntry() {
+            state.currentInput = '0';
+            updateDisplay();
+        }
+
+        function backspace() {
+            if (state.currentInput.length > 1) {
+                state.currentInput = state.currentInput.slice(0, -1);
+            } else {
+                state.currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            if (state.currentInput !== '0') {
+                state.currentInput = state.currentInput.startsWith('-') ? 
+                    state.currentInput.substring(1) : '-' + state.currentInput;
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            if (state.isScientificNotation && parseFloat(state.currentInput) > 1e6) {
+                elements.display.textContent = parseFloat(state.currentInput).toExponential(6);
+            } else {
+                elements.display.textContent = state.currentInput;
+            }
+            elements.expression.textContent = state.expression;
+        }
+
+        // Memory Functions
+        function handleMemory(op) {
+            const current = parseFloat(state.currentInput) || 0;
+            
+            switch(op) {
+                case 'MC': 
+                    state.memory = 0; 
+                    showToast('Memory cleared'); 
+                    break;
+                case 'MR': 
+                    state.currentInput = state.memory.toString(); 
+                    showToast(`Recalled: ${state.memory}`); 
+                    break;
+                case 'MPlus': 
+                    state.memory += current; 
+                    showToast(`Added: ${current}`); 
+                    break;
+                case 'MMinus': 
+                    state.memory -= current; 
+                    showToast(`Subtracted: ${current}`); 
+                    break;
+                case 'MS': 
+                    state.memory = current; 
+                    showToast(`Stored: ${current}`); 
+                    break;
+                case 'MMultiply': 
+                    state.memory *= current; 
+                    showToast(`Multiplied: ${current}`); 
+                    break;
+                case 'MDivide': 
+                    if (current !== 0) {
+                        state.memory /= current; 
+                        showToast(`Divided: ${current}`);
+                    } else {
+                        showToast('Cannot divide by zero');
+                    }
+                    break;
+            }
+            
+            updateDisplay();
+            elements.memoryIndicator.style.display = state.memory !== 0 ? 'inline-block' : 'none';
+        }
+
+        // Scientific Functions
+        function addScientific(func) {
+            if (state.shouldReset) {
+                state.currentInput = '';
+                state.shouldReset = false;
+            }
+            
+            const num = parseFloat(state.currentInput) || 0;
+            let result;
+
+            try {
+                switch(func) {
+                    case 'sin': result = Math.sin(num * Math.PI / 180); break;
+                    case 'cos': result = Math.cos(num * Math.PI / 180); break;
+                    case 'tan': result = Math.tan(num * Math.PI / 180); break;
+                    case 'asin': result = Math.asin(num) * 180 / Math.PI; break;
+                    case 'acos': result = Math.acos(num) * 180 / Math.PI; break;
+                    case 'atan': result = Math.atan(num) * 180 / Math.PI; break;
+                    case 'log': result = Math.log10(num); break;
+                    case 'ln': result = Math.log(num); break;
+                    case 'sqrt': result = Math.sqrt(num); break;
+                    case 'square': result = Math.pow(num, 2); break;
+                    case 'cube': result = Math.pow(num, 3); break;
+                    case 'power': 
+                        state.operator = '^';
+                        state.previousInput = state.currentInput;
+                        state.expression = `${state.currentInput} ^ `;
+                        state.currentInput = '0';
+                        updateDisplay();
+                        return;
+                    case 'tenPower': result = Math.pow(10, num); break;
+                    case 'ePower': result = Math.exp(num); break;
+                    case 'pi': 
+                        state.currentInput = Math.PI.toString(); 
+                        updateDisplay(); 
+                        return;
+                    case 'e': 
+                        state.currentInput = Math.E.toString(); 
+                        updateDisplay(); 
+                        return;
+                    case 'factorial':
+                        if (num < 0) throw 'Negative number';
+                        if (num > 170) throw 'Too large';
+                        result = 1;
+                        for (let i = 2; i <= num; i++) result *= i;
+                        break;
+                    case 'percent':
+                        result = num / 100;
+                        break;
+                    case 'leftParen':
+                        state.currentInput += '(';
+                        updateDisplay();
+                        return;
+                    case 'rightParen':
+                        state.currentInput += ')';
+                        updateDisplay();
+                        return;
+                    case 'abs':
+                        result = Math.abs(num);
+                        break;
+                    case 'inverse':
+                        if (num === 0) throw 'Division by zero';
+                        result = 1 / num;
+                        break;
+                    case 'ee':
+                        state.isScientificNotation = !state.isScientificNotation;
+                        showToast(`Scientific notation ${state.isScientificNotation ? 'ON' : 'OFF'}`);
+                        updateDisplay();
+                        return;
+                }
+                
+                if (result !== undefined) {
+                    if (!isFinite(result)) throw 'Result is infinite';
+                    addToHistory(`${func}(${num})`, result);
+                    state.currentInput = result.toString();
+                    state.shouldReset = true;
+                    updateDisplay();
+                }
+            } catch (e) {
+                showToast('Error: ' + e);
+            }
+        }
+
+        // Converter Functions
+        function initConverter() {
+            const grid = document.getElementById('categoryGrid');
+            const categories = Object.keys(units);
+            
+            grid.innerHTML = categories.map((cat, i) => 
+                `<button class="category-btn ${i === 0 ? 'active' : ''}" data-category="${cat}">${cat}</button>`
+            ).join('');
+
+            document.querySelectorAll('[data-category]').forEach(btn => {
+                btn.addEventListener('click', () => selectCategory(btn.textContent));
+            });
+            
+            selectCategory(categories[0]);
+        }
+
+        function selectCategory(category) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === category);
+            });
+            
+            const unitList = Object.keys(units[category]);
+            const fromSelect = document.getElementById('converterFromUnit');
+            const toSelect = document.getElementById('converterToUnit');
+            
+            fromSelect.innerHTML = unitList.map(u => `<option value="${u}">${u}</option>`).join('');
+            toSelect.innerHTML = unitList.map(u => `<option value="${u}">${u}</option>`).join('');
+            
+            if (unitList.length > 1) toSelect.value = unitList[1];
+            convert();
+        }
+
+        function convert() {
+            const category = document.querySelector('.category-btn.active')?.textContent;
+            if (!category) return;
+            
+            const fromVal = parseFloat(document.getElementById('converterFrom').value) || 0;
+            const fromUnit = document.getElementById('converterFromUnit').value;
+            const toUnit = document.getElementById('converterToUnit').value;
+            
+            let result;
+            
+            if (category === 'Temperature') {
+                let celsius;
+                if (fromUnit === 'C') celsius = fromVal;
+                else if (fromUnit === 'F') celsius = (fromVal - 32) * 5/9;
+                else celsius = fromVal - 273.15;
+                
+                if (toUnit === 'C') result = celsius;
+                else if (toUnit === 'F') result = celsius * 9/5 + 32;
+                else result = celsius + 273.15;
+            } else {
+                result = fromVal * units[category][fromUnit] / units[category][toUnit];
+            }
+            
+            document.getElementById('converterResult').textContent = 
+                result.toFixed(8).replace(/\.?0+$/, '');
+        }
+
+        // History Functions
+        function addToHistory(expr, result) {
+            state.history.unshift({ expr, result, time: new Date().toLocaleString() });
+            if (state.history.length > 100) state.history.pop();
+            localStorage.setItem('calcHistory', JSON.stringify(state.history));
+            if (state.currentMode === 'history') displayHistory();
+        }
+
+        function displayHistory() {
+            const list = document.getElementById('historyList');
+            const searchTerm = document.getElementById('historySearch')?.value.toLowerCase() || '';
+            
+            const filteredHistory = state.history.filter(item => 
+                item.expr.toLowerCase().includes(searchTerm) || 
+                item.result.toString().includes(searchTerm)
+            );
+            
+            if (filteredHistory.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-tertiary);">No history entries</div>';
+                return;
+            }
+            
+            list.innerHTML = filteredHistory.map((item, i) => `
+                <div class="history-item" data-history-index="${i}">
+                    <div class="history-expr">${item.expr}</div>
+                    <div class="history-result">${item.result}</div>
+                    <div class="history-time">${item.time}</div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('[data-history-index]').forEach(item => {
+                item.addEventListener('click', () => {
+                    const index = item.getAttribute('data-history-index');
+                    recallHistory(filteredHistory[index].result);
+                });
+            });
+        }
+
+        function recallHistory(val) {
+            state.currentInput = val.toString();
+            state.shouldReset = true;
+            updateDisplay();
+            setMode('basic');
+        }
+
+        function clearHistory() {
+            state.history = [];
+            localStorage.removeItem('calcHistory');
+            displayHistory();
+            showToast('History cleared');
+        }
+
+        // Mode Functions
+        function setMode(mode) {
+            state.currentMode = mode;
+            localStorage.setItem('defaultMode', mode);
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase() === mode);
+            });
+            
+            elements.scientificPanel.style.display = mode === 'scientific' ? 'grid' : 'none';
+            elements.converterPanel.style.display = mode === 'converter' ? 'block' : 'none';
+            elements.historyPanel.style.display = mode === 'history' ? 'block' : 'none';
+            
+            if (mode === 'history') displayHistory();
+        }
+
+        // Theme Functions
+        function toggleTheme() {
+            state.isDark = !state.isDark;
+            document.documentElement.setAttribute('data-theme', state.isDark ? 'dark' : 'light');
+            localStorage.setItem('theme', state.isDark ? 'dark' : 'light');
+            
+            const icon = document.querySelector('.theme-toggle i');
+            icon.className = state.isDark ? 'fas fa-sun' : 'fas fa-moon';
+            
+            showToast(state.isDark ? 'Dark mode activated' : 'Light mode activated');
+        }
+
+        function loadTheme() {
+            document.documentElement.setAttribute('data-theme', state.isDark ? 'dark' : 'light');
+            const icon = document.querySelector('.theme-toggle i');
+            if (icon) {
+                icon.className = state.isDark ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        }
+
+        // Keyboard Support
+        function handleKeyboard(e) {
+            const key = e.key;
+            
+            if (/[0-9]/.test(key)) {
+                e.preventDefault();
+                appendNumber(key);
+            } else if (key === '.') {
+                e.preventDefault();
+                appendDecimal();
+            } else if (key === '+') {
+                e.preventDefault();
+                appendOperator('+');
+            } else if (key === '-') {
+                e.preventDefault();
+                appendOperator('-');
+            } else if (key === '*') {
+                e.preventDefault();
+                appendOperator('*');
+            } else if (key === '/') {
+                e.preventDefault();
+                appendOperator('/');
+            } else if (key === '(') {
+                e.preventDefault();
+                addScientific('leftParen');
+            } else if (key === ')') {
+                e.preventDefault();
+                addScientific('rightParen');
+            } else if (key === 'Enter' || key === '=') {
+                e.preventDefault();
+                calculate();
+            } else if (key === 'Escape') {
+                e.preventDefault();
+                clearAll();
+                hideTrigModal();
+            } else if (key === 'Backspace') {
+                e.preventDefault();
+                backspace();
+            } else if (key === '%') {
+                e.preventDefault();
+                addScientific('percent');
+            }
+        }
+
+        // Toast
+        function showToast(message) {
+            elements.toast.textContent = message;
+            elements.toast.classList.add('show');
+            setTimeout(() => {
+                elements.toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Trig Table Modal Functions
+        function showTrigModal() {
+            elements.trigModalOverlay.style.display = 'flex';
+            initTrigTableClickHandlers();
+        }
+
+        function hideTrigModal() {
+            elements.trigModalOverlay.style.display = 'none';
+        }
+
+        function initTrigTableClickHandlers() {
+            // Remove existing handlers to prevent duplicates
+            document.querySelectorAll('.trig-table td:not(.func-name)').forEach(cell => {
+                cell.removeEventListener('click', handleTrigCellClick);
+                cell.addEventListener('click', handleTrigCellClick);
+                
+                // Add tooltip
+                const value = cell.textContent;
+                if (value !== '—') {
+                    const decimal = convertTrigValue(value);
+                    if (decimal !== null) {
+                        cell.setAttribute('title', `≈ ${decimal.toFixed(6)}`);
+                    }
+                }
+            });
+        }
+
+        function handleTrigCellClick(e) {
+            const cell = e.currentTarget;
+            const value = cell.textContent;
+            const func = cell.parentElement.querySelector('.func-name').textContent;
+            
+            // Find angle based on column
+            const headers = document.querySelectorAll('.trig-table th');
+            let angle = 0;
+            for (let i = 1; i < headers.length; i++) {
+                if (cell.cellIndex === i) {
+                    angle = headers[i].textContent.replace('°', '');
+                    break;
+                }
+            }
+            
+            if (value !== '—') {
+                const decimalValue = convertTrigValue(value);
+                if (decimalValue !== null) {
+                    appendNumber(decimalValue.toString());
+                    addToHistory(`${func}(${angle}°)`, decimalValue);
+                    showToast(`${func}(${angle}°) = ${decimalValue}`);
+                    hideTrigModal(); // Auto-hide after selection
+                }
+            } else {
+                showToast(`${func}(${angle}°) is undefined`);
+            }
+        }
+
+        function convertTrigValue(value) {
+            const conversions = {
+                '0': 0, '1': 1, '-1': -1,
+                '1/2': 0.5, '-1/2': -0.5,
+                '√2/2': Math.sqrt(2)/2, '-√2/2': -Math.sqrt(2)/2,
+                '√3/2': Math.sqrt(3)/2, '-√3/2': -Math.sqrt(3)/2,
+                '1/√3': 1/Math.sqrt(3), '-1/√3': -1/Math.sqrt(3),
+                '√3': Math.sqrt(3), '-√3': -Math.sqrt(3)
+            };
+            return conversions[value] !== undefined ? conversions[value] : null;
+        }
+
+        function initTrigTable() {
+            // Initial setup - will be fully initialized when modal opens
+            initTrigTableClickHandlers();
+        }
+    </script>
+</body>
+</html>

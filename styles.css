@@ -1,0 +1,600 @@
+:root {
+    --bg-primary: #f0f2f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-tertiary: #6c757d;
+    --border: #dee2e6;
+    --accent: #4361ee;
+    --accent-light: #4895ef;
+    --accent-dark: #3a0ca3;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --card-bg: #ffffff;
+    --button-bg: #ffffff;
+    --button-hover: #e9ecef;
+    --operator-bg: #dbeafe;
+    --function-bg: #f1f5f9;
+    --equals-bg: #4361ee;
+    --equals-color: #ffffff;
+    --display-bg: #ffffff;
+    --memory-bg: #e8f5e9;
+    --scientific-bg: #e3f2fd;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #808080;
+    --border: #333333;
+    --accent: #4895ef;
+    --accent-light: #4cc9f0;
+    --accent-dark: #3f37c9;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --card-bg: #2d2d2d;
+    --button-bg: #333333;
+    --button-hover: #404040;
+    --operator-bg: #1b448f;
+    --function-bg: #2d2d2d;
+    --equals-bg: #4895ef;
+    --equals-color: #ffffff;
+    --display-bg: #1a1a1a;
+    --memory-bg: #1b448f;
+    --scientific-bg: #0d47a1;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, color 0.3s;
+    padding: 10px;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px var(--shadow);
+    overflow: hidden;
+}
+
+.header {
+    background: var(--accent);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-toggle {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(30deg);
+}
+
+.mode-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+    padding: 2px;
+}
+
+.mode-btn {
+    padding: 12px;
+    border: none;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-btn.active {
+    background: var(--accent);
+    color: white;
+}
+
+.mode-btn:hover {
+    background: var(--accent-light);
+    color: white;
+}
+
+.memory-bar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    padding: 5px;
+    background: var(--bg-tertiary);
+}
+
+.memory-btn {
+    padding: 8px 4px;
+    border: none;
+    background: var(--memory-bg);
+    color: var(--accent);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.memory-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.display {
+    background: var(--display-bg);
+    padding: 20px;
+    text-align: right;
+    border-bottom: 2px solid var(--border);
+    min-height: 120px;
+}
+
+.expression {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    min-height: 20px;
+    margin-bottom: 5px;
+    word-wrap: break-word;
+}
+
+.current {
+    font-size: 42px;
+    font-weight: 300;
+    color: var(--text-primary);
+    word-wrap: break-word;
+    font-family: 'calibri', monospace;
+}
+
+.memory-indicator {
+    display: inline-block;
+    background: var(--success);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.scientific-panel {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    background: var(--border);
+    padding: 1px;
+}
+
+.sci-btn {
+    border: none;
+    padding: 15px 5px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--scientific-bg);
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.sci-btn:hover {
+    background: var(--accent-light);
+    color: white;
+    transform: scale(0.98);
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    padding: 1px;
+}
+
+.keypad button {
+    border: none;
+    padding: 18px 10px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--button-bg);
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.keypad button:hover {
+    background: var(--button-hover);
+    transform: scale(0.98);
+}
+
+.keypad button.operator {
+    background: var(--operator-bg);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.keypad button.function {
+    background: var(--function-bg);
+    color: var(--text-primary);
+}
+
+.keypad button.equals {
+    background: var(--equals-bg);
+    color: var(--equals-color);
+    font-size: 24px;
+}
+
+.keypad button.equals:hover {
+    background: var(--accent-dark);
+}
+
+.converter-panel {
+    padding: 20px;
+    background: var(--bg-secondary);
+    display: none;
+}
+
+.converter-row {
+    margin-bottom: 15px;
+}
+
+.converter-label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 5px;
+}
+
+.converter-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--display-bg);
+    color: var(--text-primary);
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.converter-select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--display-bg);
+    color: var(--text-primary);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.category-btn {
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.category-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.category-btn:hover {
+    background: var(--accent-light);
+    color: white;
+}
+
+.converter-result {
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--accent);
+    text-align: center;
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.history-panel {
+    padding: 20px;
+    background: var(--bg-secondary);
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.history-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.history-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.history-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.history-btn:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.history-item {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.history-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.history-expr {
+    font-size: 14px;
+    color: var(--text-tertiary);
+}
+
+.history-result {
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.history-time {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-align: right;
+}
+
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--accent);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Trigonometry Table Styles - Original Side Panel Version */
+.trig-panel {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    margin: 10px;
+    padding: 15px;
+    box-shadow: 0 5px 15px var(--shadow);
+    position: relative;
+    z-index: 100;
+}
+
+.trig-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+}
+
+.trig-header h3 {
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-trig {
+    background: var(--danger);
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.close-trig:hover {
+    transform: scale(1.1);
+    background: var(--accent-dark);
+}
+
+.trig-table-container {
+    overflow-x: auto;
+    margin-bottom: 10px;
+}
+
+.trig-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    text-align: center;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.trig-table th {
+    background: var(--accent);
+    color: white;
+    padding: 10px 5px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.trig-table td {
+    padding: 8px 5px;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.trig-table .func-name {
+    background: var(--accent-light);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.trig-table tbody tr:hover td {
+    background: var(--button-hover);
+    cursor: pointer;
+}
+
+.trig-table td:not(.func-name):hover {
+    background: var(--accent);
+    color: white;
+    transform: scale(0.95);
+    transition: all 0.2s;
+}
+
+.trig-footer {
+    text-align: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.trig-note {
+    color: var(--text-tertiary);
+    font-size: 11px;
+    font-style: italic;
+}
+
+/* Decimal values tooltip */
+.trig-table td[title] {
+    position: relative;
+    cursor: help;
+}
+
+.trig-table td[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .scientific-panel {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .sci-btn {
+        padding: 12px 5px;
+        font-size: 12px;
+    }
+    
+    .current {
+        font-size: 32px;
+    }
+    
+    .memory-bar {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .trig-table {
+        font-size: 10px;
+    }
+    
+    .trig-table th,
+    .trig-table td {
+        padding: 6px 2px;
+    }
+}
